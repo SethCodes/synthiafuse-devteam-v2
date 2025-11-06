@@ -1,0 +1,312 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-06",
+  "agents": {
+    "product-manager": {
+      "id": "product-manager",
+      "name": "Product Manager",
+      "role": "Requirements & Stakeholder Management",
+      "capabilities": [
+        "requirements_gathering",
+        "user_research",
+        "stakeholder_communication",
+        "roadmap_planning",
+        "acceptance_criteria",
+        "prioritization"
+      ],
+      "technologies": ["Jira", "Confluence", "Analytics", "A/B Testing"],
+      "complexity": {
+        "handles": [2, 3, 4, 5, 6],
+        "preferred": 4
+      },
+      "inputType": ["user_stories", "requirements", "feedback"],
+      "outputType": ["requirements_doc", "user_stories", "acceptance_criteria"],
+      "estimatedLoadTime": "minimal",
+      "fullContextPath": "../Evolve-Dev-Team/agents/product-manager.md",
+      "priority": 1,
+      "workflow": {
+        "phase": "requirements",
+        "dependencies": [],
+        "nextAgents": ["team-lead"]
+      }
+    },
+    "team-lead": {
+      "id": "team-lead",
+      "name": "Team Lead",
+      "role": "Coordination & Planning",
+      "capabilities": [
+        "technical_planning",
+        "task_breakdown",
+        "agent_coordination",
+        "timeline_estimation",
+        "risk_assessment",
+        "architecture_decisions"
+      ],
+      "technologies": ["Project Management", "Architecture", "All Stacks"],
+      "complexity": {
+        "handles": [3, 4, 5, 6, 7, 8],
+        "preferred": 6
+      },
+      "inputType": ["requirements", "technical_constraints"],
+      "outputType": ["implementation_plan", "task_breakdown", "timeline"],
+      "estimatedLoadTime": "minimal",
+      "fullContextPath": "../Evolve-Dev-Team/agents/team-lead.md",
+      "priority": 2,
+      "workflow": {
+        "phase": "planning",
+        "dependencies": ["product-manager"],
+        "nextAgents": ["backend-dev", "frontend-dev", "devops"]
+      }
+    },
+    "backend-dev": {
+      "id": "backend-dev",
+      "name": "Backend Developer",
+      "role": "API, Business Logic, Database",
+      "capabilities": [
+        "api_development",
+        "database_design",
+        "business_logic",
+        "server_implementation",
+        "performance_optimization",
+        "security_implementation"
+      ],
+      "technologies": ["Node.js", "Express", "MongoDB", "PostgreSQL", "Redis", "Unity C#"],
+      "complexity": {
+        "handles": [3, 4, 5, 6, 7, 8],
+        "preferred": 6
+      },
+      "inputType": ["api_design", "data_models", "business_requirements"],
+      "outputType": ["api_endpoints", "database_schema", "server_code"],
+      "estimatedLoadTime": "medium",
+      "fullContextPath": "../Evolve-Dev-Team/agents/backend-dev.md",
+      "priority": 3,
+      "workflow": {
+        "phase": "implementation",
+        "dependencies": ["team-lead"],
+        "nextAgents": ["qa-engineer", "code-reviewer"]
+      }
+    },
+    "frontend-dev": {
+      "id": "frontend-dev",
+      "name": "Frontend Developer",
+      "role": "UI, Components, User Experience",
+      "capabilities": [
+        "ui_implementation",
+        "component_development",
+        "state_management",
+        "responsive_design",
+        "accessibility",
+        "user_interactions"
+      ],
+      "technologies": ["React", "React Native", "TypeScript", "Unity UI", "CSS", "Redux"],
+      "complexity": {
+        "handles": [3, 4, 5, 6, 7],
+        "preferred": 5
+      },
+      "inputType": ["ui_designs", "wireframes", "component_specs"],
+      "outputType": ["ui_components", "styled_interfaces", "user_flows"],
+      "estimatedLoadTime": "medium",
+      "fullContextPath": "../Evolve-Dev-Team/agents/frontend-dev.md",
+      "priority": 3,
+      "workflow": {
+        "phase": "implementation",
+        "dependencies": ["team-lead"],
+        "nextAgents": ["qa-engineer", "code-reviewer"]
+      }
+    },
+    "devops": {
+      "id": "devops",
+      "name": "DevOps Engineer",
+      "role": "Infrastructure, Deployment, Monitoring",
+      "capabilities": [
+        "infrastructure_setup",
+        "ci_cd_pipelines",
+        "deployment_automation",
+        "monitoring_setup",
+        "security_hardening",
+        "scalability"
+      ],
+      "technologies": ["Docker", "AWS", "DigitalOcean", "GitHub Actions", "Nginx", "MongoDB"],
+      "complexity": {
+        "handles": [4, 5, 6, 7, 8, 9],
+        "preferred": 6
+      },
+      "inputType": ["infrastructure_requirements", "deployment_specs"],
+      "outputType": ["infrastructure_code", "deployment_scripts", "monitoring_config"],
+      "estimatedLoadTime": "medium",
+      "fullContextPath": "../Evolve-Dev-Team/agents/devops.md",
+      "priority": 4,
+      "workflow": {
+        "phase": "deployment",
+        "dependencies": ["team-lead"],
+        "nextAgents": ["qa-engineer"]
+      }
+    },
+    "qa-engineer": {
+      "id": "qa-engineer",
+      "name": "QA Engineer",
+      "role": "Testing, Quality Gates, Validation",
+      "capabilities": [
+        "test_planning",
+        "automated_testing",
+        "manual_testing",
+        "quality_assurance",
+        "bug_detection",
+        "regression_testing",
+        "performance_testing"
+      ],
+      "technologies": ["Jest", "Playwright", "Selenium", "Unity Test Runner", "Postman", "JMeter"],
+      "complexity": {
+        "handles": [2, 3, 4, 5, 6, 7],
+        "preferred": 5
+      },
+      "inputType": ["implementation", "test_requirements", "acceptance_criteria"],
+      "outputType": ["test_results", "bug_reports", "quality_metrics"],
+      "estimatedLoadTime": "medium",
+      "fullContextPath": "../Evolve-Dev-Team/agents/qa-engineer.md",
+      "priority": 5,
+      "workflow": {
+        "phase": "quality_assurance",
+        "dependencies": ["backend-dev", "frontend-dev", "devops"],
+        "nextAgents": ["code-reviewer"],
+        "loop": {
+          "maxCycles": 5,
+          "failureTarget": ["backend-dev", "frontend-dev"]
+        }
+      }
+    },
+    "code-reviewer": {
+      "id": "code-reviewer",
+      "name": "Code Reviewer",
+      "role": "Code Quality, Cleanup, Best Practices",
+      "capabilities": [
+        "code_review",
+        "cleanup_detection",
+        "dead_code_removal",
+        "debug_log_detection",
+        "comment_optimization",
+        "security_review",
+        "best_practices",
+        "anti_pattern_detection"
+      ],
+      "technologies": ["All Languages", "ESLint", "Prettier", "Security Scanners"],
+      "complexity": {
+        "handles": [2, 3, 4, 5, 6, 7],
+        "preferred": 5
+      },
+      "inputType": ["implementation_code", "test_results"],
+      "outputType": ["review_feedback", "cleanup_suggestions", "approval_status"],
+      "estimatedLoadTime": "medium",
+      "fullContextPath": "./code-reviewer.md",
+      "priority": 6,
+      "workflow": {
+        "phase": "code_review",
+        "dependencies": ["qa-engineer"],
+        "nextAgents": ["git-manager"],
+        "loop": {
+          "maxCycles": 3,
+          "failureTarget": ["backend-dev", "frontend-dev"]
+        }
+      }
+    },
+    "git-manager": {
+      "id": "git-manager",
+      "name": "Git Manager",
+      "role": "Version Control, Branch Management, PR Creation",
+      "capabilities": [
+        "branch_creation",
+        "commit_management",
+        "pr_creation",
+        "merge_operations",
+        "conflict_resolution",
+        "repository_cleanup"
+      ],
+      "technologies": ["Git", "GitHub", "Bitbucket", "GitLab"],
+      "complexity": {
+        "handles": [1, 2, 3, 4, 5],
+        "preferred": 3
+      },
+      "inputType": ["code_changes", "commit_messages"],
+      "outputType": ["pull_request", "branch_status", "merge_result"],
+      "estimatedLoadTime": "minimal",
+      "fullContextPath": "../Evolve-Dev-Team/agents/git-manager.md",
+      "priority": 7,
+      "workflow": {
+        "phase": "deployment",
+        "dependencies": ["code-reviewer"],
+        "nextAgents": []
+      }
+    },
+    "company-knowledge": {
+      "id": "company-knowledge",
+      "name": "Company Knowledge Manager",
+      "role": "Knowledge Base Management, Context Loading",
+      "capabilities": [
+        "knowledge_search",
+        "context_loading",
+        "pattern_retrieval",
+        "documentation_management",
+        "learning_integration",
+        "metadata_management"
+      ],
+      "technologies": ["MongoDB", "Knowledge Base", "Search", "Documentation"],
+      "complexity": {
+        "handles": [1, 2, 3, 4],
+        "preferred": 2
+      },
+      "inputType": ["search_query", "context_requirements"],
+      "outputType": ["knowledge_context", "relevant_patterns", "documentation"],
+      "estimatedLoadTime": "low",
+      "fullContextPath": "../Evolve-Dev-Team/agents/company-knowledge.md",
+      "priority": 0,
+      "workflow": {
+        "phase": "all",
+        "dependencies": [],
+        "nextAgents": ["all"]
+      }
+    }
+  },
+  "routingRules": {
+    "byComplexity": {
+      "1-2": ["company-knowledge", "git-manager"],
+      "3-4": ["product-manager", "qa-engineer"],
+      "5-6": ["team-lead", "backend-dev", "frontend-dev", "devops"],
+      "7-8": ["team-lead", "backend-dev", "devops"],
+      "9-10": ["team-lead", "devops"]
+    },
+    "byTaskType": {
+      "requirements": ["product-manager"],
+      "planning": ["team-lead"],
+      "backend": ["backend-dev"],
+      "frontend": ["frontend-dev"],
+      "infrastructure": ["devops"],
+      "testing": ["qa-engineer"],
+      "review": ["code-reviewer"],
+      "version_control": ["git-manager"],
+      "knowledge": ["company-knowledge"]
+    },
+    "byTechnology": {
+      "Unity": ["backend-dev", "frontend-dev"],
+      "React Native": ["frontend-dev"],
+      "Node.js": ["backend-dev"],
+      "MongoDB": ["backend-dev", "company-knowledge"],
+      "AWS": ["devops"],
+      "Git": ["git-manager"]
+    }
+  },
+  "optimization": {
+    "discovery": {
+      "useMetadataOnly": true,
+      "loadFullContextOnDemand": true,
+      "cacheAgentContexts": true,
+      "estimatedSavings": "90% reduction in discovery overhead"
+    },
+    "modelSelection": {
+      "routing": "haiku",
+      "simple_implementation": "sonnet",
+      "complex_implementation": "sonnet",
+      "architecture": "opus",
+      "review": "sonnet"
+    }
+  }
+}
