@@ -406,7 +406,7 @@ class EvolveIntegration {
           ? ((this.stats.tokens.saved + this.stats.tokens.cached) / this.stats.tokens.total * 100).toFixed(2) + '%'
           : 'N/A'
       },
-      budgetStatus: this.budgetManager.getStatus(),
+      budgetStatus: this.budgetManager.getStatistics(),
       instance: this.config.instance
     };
   }
