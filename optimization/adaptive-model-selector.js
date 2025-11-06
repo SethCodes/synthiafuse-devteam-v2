@@ -137,7 +137,7 @@ class AdaptiveModelSelector extends IntelligentModelSelector {
     // Call parent learning
     await super.learnFromFeedback(selectionId, wasSuccessful, actualModelNeeded, metadata);
 
-    const selection = this.selections.get(selectionId);
+    const selection = this.usageTracking.selections.find(s => s.id === selectionId);
     if (!selection) return;
 
     // Enhanced learning: Pattern recognition
@@ -159,7 +159,7 @@ class AdaptiveModelSelector extends IntelligentModelSelector {
    * @param {Object} metadata - Metadata
    */
   updateTaskPatterns(selection, wasSuccessful, metadata) {
-    const taskType = selection.task.type || 'unknown';
+    const taskType = selection.taskType || 'unknown';
 
     if (!this.taskPatterns.has(taskType)) {
       this.taskPatterns.set(taskType, {
@@ -183,14 +183,18 @@ class AdaptiveModelSelector extends IntelligentModelSelector {
       (pattern.avgComplexity * (pattern.totalAttempts - 1) + selection.complexity) /
       pattern.totalAttempts;
 
-    // Update model distribution
-    const modelUsed = selection.modelName;
-    pattern.modelDistribution[modelUsed] =
-      (pattern.modelDistribution[modelUsed] || 0) + 1;
+    // Update model distribution - extract model name from ID
+    const modelId = selection.model;
+    const modelName = modelId.includes('haiku') ? 'haiku' :
+                      modelId.includes('sonnet') ? 'sonnet' :
+                      modelId.includes('opus') ? 'opus' : 'unknown';
 
-    // Track characteristics
-    if (selection.task.characteristics) {
-      for (const char of selection.task.characteristics) {
+    pattern.modelDistribution[modelName] =
+      (pattern.modelDistribution[modelName] || 0) + 1;
+
+    // Track characteristics from metadata if provided
+    if (metadata.characteristics) {
+      for (const char of metadata.characteristics) {
         const count = pattern.commonCharacteristics.get(char) || 0;
         pattern.commonCharacteristics.set(char, count + 1);
       }
@@ -203,13 +207,19 @@ class AdaptiveModelSelector extends IntelligentModelSelector {
    * @param {boolean} wasSuccessful - Success
    */
   updateConfidenceTracking(selection, wasSuccessful) {
-    const confidence = this.calculateSelectionConfidence(selection.task, selection);
+    // Create a minimal task object from selection data
+    const task = {
+      type: selection.taskType,
+      description: selection.taskDescription
+    };
+
+    const confidence = this.calculateSelectionConfidence(task, selection);
 
     this.confidenceScores.push({
       confidence,
       wasSuccessful,
       complexity: selection.complexity,
-      taskType: selection.task.type
+      taskType: selection.taskType
     });
 
     // Keep only recent scores
@@ -225,7 +235,7 @@ class AdaptiveModelSelector extends IntelligentModelSelector {
    * @param {Object} metadata - Metadata
    */
   updateTaskTypePerformance(selection, wasSuccessful, metadata) {
-    const taskType = selection.task.type || 'unknown';
+    const taskType = selection.taskType || 'unknown';
 
     if (!this.taskTypePerformance.has(taskType)) {
       this.taskTypePerformance.set(taskType, {
@@ -280,10 +290,10 @@ class AdaptiveModelSelector extends IntelligentModelSelector {
 
     // Factor 2: Model accuracy for this complexity range
     const complexity = selection.complexity || this.scoreComplexity(task);
-    const modelStats = this.modelPerformance.get(selection.modelName);
+    const modelStats = this.usageTracking?.modelPerformance?.get(selection.modelName);
 
     if (modelStats && modelStats.totalTasks > 10) {
-      confidence += modelStats.successRate * 0.3;
+      confidence += (modelStats.successfulTasks / modelStats.totalTasks) * 0.3;
     }
 
     // Factor 3: Complexity match to model tier
@@ -317,7 +327,7 @@ class AdaptiveModelSelector extends IntelligentModelSelector {
     if (!this.adaptiveConfig.autoTuningEnabled) return false;
 
     return this.selectionsSinceTuning >= this.adaptiveConfig.tuningInterval &&
-           this.selections.size >= this.adaptiveConfig.minSamplesForTuning;
+           this.usageTracking.selections.length >= this.adaptiveConfig.minSamplesForTuning;
   }
 
   /**
@@ -370,7 +380,7 @@ class AdaptiveModelSelector extends IntelligentModelSelector {
     // Record tuning
     this.tuningHistory.push({
       timestamp: Date.now(),
-      selectionsAnalyzed: this.selections.size,
+      selectionsAnalyzed: this.usageTracking.selections.length,
       adjustments: Object.keys(adjustments).length
     });
 
@@ -380,7 +390,7 @@ class AdaptiveModelSelector extends IntelligentModelSelector {
 
     this.emit('auto-tuned', {
       adjustments: Object.keys(adjustments).length,
-      totalSelections: this.selections.size
+      totalSelections: this.usageTracking.selections.length
     });
   }
 
